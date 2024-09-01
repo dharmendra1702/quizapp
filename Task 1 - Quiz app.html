@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Quiz app</title>
+    <style>
+       *{
+    margin: 0;
+    padding: 0;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    box-sizing: border-box;
+    }
+    body{
+        background-color: #153243;
+    }
+    .quizcontainer{
+        background-color: #F1F7ED;
+        width: 90%;
+        max-width: 600px;
+        margin: 100px auto 0;
+        margin-left: 345px;
+        margin-top: 30px;
+        border-radius: 10px;
+        padding: 30px;
+    }
+    h1{
+        display: flex;
+        justify-content: center;
+        border-bottom: 1px solid black;
+        color: #153243;
+        padding-bottom: 20px;
+        font-size: 60px;
+    }
+    .quiz{
+        padding: 20px 0;
+    }
+    h2{
+    font-size: 30px; 
+    color: #58355E;
+    display: flex;
+    justify-content: center;
+    }
+    .btn{
+        display: inline-block;
+        background-color: #F1F7ED;
+        color: #2A2A72;
+        padding: 10px ;
+        margin: 10px 0;
+        text-decoration: none;
+        border: 1px solid black;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+        margin-bottom: 10px;
+        transition: all 0.3s;
+        font-size: 20px;
+    }
+    .btn:hover:not([disabled]) {
+        background: #222;
+        color: #fff;
+    }
+    .btn:disabled{
+        cursor: no-drop;
+    }
+    #next{
+        display: none;
+        justify-content: center;
+        background-color: rgb(5, 6, 5);
+        color: #fbfafa;
+        border: 0;
+        width: 100px;
+        padding: 10px;
+        margin: 20px auto 0;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .correct{
+        background: green;
+        color: white;
+    }
+    .incorrect{
+        background: red;
+    }
+    </style>
+</head>
+<body>
+    <div class="quizcontainer">
+        <h1>QUIZ</h1>
+        <div class="quiz">
+            <h2 id="question">question</h2>
+            <div id="answer">
+            </div>
+            <div>
+                <button id="next">Next</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: "HTML Stands for  ",
+                answers: [
+                    { text: "HyperText Markup Language", correct: true },
+                    { text: "HyperText Machine Language", correct: false },
+                    { text: "HyperText Marking Language", correct: false },
+                    { text: "HighText Marking Language", correct: false },
+                ]
+            },
+            {
+                question: "CSS stands for  ",
+                answers: [
+                    { text: "Color Style Sheets", correct: false },
+                    { text: "Cascade Sheets Style", correct: false},
+                    { text: "Cascade Style Sheet", correct: false },
+                    { text: "Cascading Style Sheets", correct: true },
+                ]
+            },
+            {
+                question: "Who is the father of HTML?",
+                answers: [
+                    { text: "Rasmus Lerdorf", correct: false },
+                    { text: "Tim Berners-Lee", correct: true },
+                    { text: "Brendan Eich", correct: false },
+                    { text: "Sergey Brin", correct: false },
+                ]
+            },
+            {
+                question: "HTML is a set of markup",
+                answers: [
+                    { text: "tags", correct: true },
+                    { text: "sets", correct: false },
+                    { text: "attributes", correct: false },
+                    { text: "none of the above", correct: false },
+                ]
+            },
+            {
+                question: "The <link> tag goes inside",
+                answers: [
+                    { text: "the title section", correct: false },
+                    { text: "the body section", correct: false },
+                    { text: "the head section", correct: true },
+                    { text: "None of the above", correct: false },
+                ]
+            }
+        ];
+        const questionElement = document.getElementById("question");
+        const answers = document.getElementById("answer");
+        const next = document.getElementById("next");
+        let currentQuestionIndex = 0;
+        let score = 0;
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            next.innerHTML = "Next";
+            showQuestion();
+        }
+        function showQuestion() {
+            resetState();
+            let currentQuestion = questions[currentQuestionIndex];
+            let questionNo = currentQuestionIndex + 1;
+            questionElement.innerHTML = questionNo + ". " + currentQuestion.question;
+
+            currentQuestion.answers.forEach(answer => {
+                const button = document.createElement("button");
+                button.innerHTML = answer.text;
+                button.classList.add("btn");
+                answers.appendChild(button);
+                if (answer.correct) {
+                    button.dataset.correct = answer.correct;
+                }
+                button.addEventListener("click", selectAnswer);
+            });
+        }
+        function resetState() {
+            next.style.display = "none";
+            while (answers.firstChild) {
+                answers.removeChild(answers.firstChild);
+            }
+        }
+        function selectAnswer(e) {
+            const selectedBtn = e.target;
+            const isCorrect = selectedBtn.dataset.correct === "true";
+            if (isCorrect) {
+                selectedBtn.classList.add("correct");
+                score++;
+            } else {
+                selectedBtn.classList.add("incorrect");
+            }
+            Array.from(answers.children).forEach(button => {
+                if (button.dataset.correct === "true") {
+                    button.classList.add("correct");
+                }
+                button.disabled = true;
+            });
+            next.style.display = "block";
+        }
+        function showScore() {
+            resetState();
+            questionElement.innerHTML = `Your score is ${score} out of ${questions.length}!`;
+            next.innerHTML = "Play Again";
+            next.style.display = "block";
+        }
+        function handlenext() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showScore();
+            }
+        }
+        next.addEventListener("click", () => {
+            if (currentQuestionIndex < questions.length) {
+                handlenext();
+            } else {
+                startQuiz();
+            }
+        });
+        startQuiz();
+    </script>
+</body>
+</html>
